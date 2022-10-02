@@ -653,6 +653,7 @@ module.exports = class FPDF {
 
         this.links[link] = [page, y];
     }
+   
 
     Link(x, y, w, h, link) {
 
@@ -934,6 +935,24 @@ module.exports = class FPDF {
         this.x = this.lMargin;
     }
 
+     TextWithDirection(x, y, txt, direction = 'R') {
+        let s = "";
+        if (direction == 'R') {
+            s = sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET', 1, 0, 0, 1, x * this.k, (this.h - y) * this.k, this._escape(txt));
+        } else if (direction == 'L') {
+            s = sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET', -1, 0, 0, -1, x * this.k, (this.h - y) * this.k, this._escape(txt));
+        } else if (direction == 'U') {
+            s = sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET', 0, 1, -1, 0, x * this.k, (this.h - y) * this.k, this._escape(txt));
+        } else if (direction == 'D') {
+            s = sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET', 0, -1, 1, 0, x * this.k, (this.h - y) * this.k, this._escape(txt));
+        } else {
+            s = sprintf('BT %.2f %.2f Td (%s) Tj ET', x * this.k, (this.h - y) * this.k, this._escape(txt));
+        }
+        if (this.ColorFlag) {
+            s = 'q ' + this.TextColor + ' ' + s + ' Q';
+        }
+        this._out(s);
+    }
     Write(h, txt, link = '') {
 
 
